@@ -6,7 +6,7 @@ networks:
 
 services:
   nginx:
-    image: hub.goship.asia/enviroment_nginx
+    image: hub.goship.asia/dev-envnginx:dev
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     deploy:

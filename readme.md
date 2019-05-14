@@ -47,7 +47,7 @@ address=/.lc/127.0.0.1
 listen-address=127.0.0.1
 ```
 ```bash
-sudo tee /etc/resolver/ls >/dev/null <<EOF
+    $ sudo tee /etc/resolver/ls >/dev/null <<EOF
 nameserver 127.0.0.1
 EOF
 ```

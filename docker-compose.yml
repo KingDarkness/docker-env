@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 networks:
   proxy:
     external:
@@ -8,6 +8,7 @@ services:
   traefik:
     image: "traefik:v2.0.0-rc3"
     container_name: "traefik"
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.lc`)"
@@ -27,6 +28,3 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - proxy
-
-
-

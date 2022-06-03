@@ -1,3 +1,4 @@
 certs/*
+!certs/.gitkeep
 .idea
 .DS_Store

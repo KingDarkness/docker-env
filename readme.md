@@ -68,3 +68,15 @@ EOF
 ```
 
 restart to apply
+
+## using https
+
+go to the root of the repo (`docker-env`) and generate certificates using [mkcert](https://github.com/FiloSottile/mkcert) :
+
+```bash
+# If it's the firt install of mkcert, run
+mkcert -install
+
+# Generate certificate for domain "docker.localhost", "domain.local" and their sub-domains
+mkcert -cert-file certs/local-cert.pem -key-file certs/local-key.pem "docker.localhost" "*.docker.localhost" "domain.lc" "*.domain.lc"
+```

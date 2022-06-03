@@ -9,22 +9,22 @@ services:
     image: "traefik:v2.0.0-rc3"
     container_name: "traefik"
     restart: always
+    security_opt:
+      - no-new-privileges:true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.lc`)"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-    command:
-      - "--log.level=DEBUG"
-      - "--api.dashboard=true"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=nginx-proxy"
-      - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./certs:/etc/certs:ro"
+      # Map the static configuration into the container
+      - "./config/static.yml:/etc/traefik/traefik.yml:ro"
+      # Map the dynamic configuration into the container
+      - "./config/dynamic.yml:/etc/traefik/dynamic.yml:ro"
     networks:
       - proxy

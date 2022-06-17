@@ -1,0 +1,38 @@
+version: "3"
+networks:
+  proxy:
+    external:
+      name: nginx-proxy
+
+services:
+  traefik:
+    image: "traefik:v2.0.0-rc3"
+    container_name: "traefik"
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.lc`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "nfscers:/etc/certs:nocopy"
+      # Map the static configuration into the container
+      - "./config/static.yml:/etc/traefik/traefik.yml:ro"
+      # Map the dynamic configuration into the container
+      - "./config/dynamic.yml:/etc/traefik/dynamic.yml:ro"
+    networks:
+      - proxy
+
+volumes:
+  nfscers:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,ro,nolock,hard,nointr,nfsvers=3
+      device: ":${PWD}/certs"

@@ -2,3 +2,27 @@ tls:
   certificates:
     - certFile: "/etc/certs/local-cert.pem"
       keyFile: "/etc/certs/local-key.pem"
+
+http:
+  middlewares:
+    # 1. Định nghĩa Middleware lỗi
+    catch-404-and-convert:
+      errors:
+        # Bắt các mã 404 (do service không được tìm thấy)
+        status:
+          - "404"
+        # Chuyển hướng nội bộ đến Service Nginx 503
+        service: errorpage-svc@docker
+        # Path mà Traefik sẽ gọi (Nginx sẽ trả về 503 bất kể path là gì)
+        query: "/error"
+
+  routers:
+    # 2. Định nghĩa Global Fallback Router
+    global-fallback:
+      rule: "HostRegexp(`{host:.*}`)" # Bắt MỌI host
+      service: errorpage-svc@docker
+      priority: 1 # Ưu tiên thấp nhất
+      middlewares:
+        - "catch-404-and-convert"
+      entryPoints:
+        - web

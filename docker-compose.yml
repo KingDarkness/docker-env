@@ -28,3 +28,13 @@ services:
       - "./config/dynamic.yml:/etc/traefik/dynamic.yml:ro"
     networks:
       - proxy
+  errorpage:
+    image: nginx:stable-alpine # Sử dụng image Nginx nhỏ gọn
+    volumes:
+      - ./nginx/error.conf:/etc/nginx/conf.d/default.conf:ro # Mount file cấu hình 503
+    networks:
+      - proxy
+    labels:
+      # Tên Service mà Middleware sẽ gọi
+      - "traefik.http.services.errorpage-svc.loadbalancer.server.port=80"
+      - "traefik.enable=true"

@@ -3,29 +3,40 @@ global:
 
 api:
   dashboard: true
+  # Lưu ý: "insecure: true" vẫn hoạt động trong v3 nhưng vẫn không an toàn.
   insecure: true
-
-providers:
-  docker:
-    endpoint: "unix:///var/run/docker.sock"
-    watch: true
-    exposedByDefault: false
-    network: nginx-proxy
-    swarmMode: false
-
-  file:
-    filename: /etc/traefik/dynamic.yml
-    watch: true
-
-log:
-  level: DEBUG
-  format: common
 
 entryPoints:
   web:
     address: ":80"
   websecure:
     address: ":443"
+
+providers:
+  # 1. Swarm Provider (Thay thế cho docker.swarmMode)
+  swarm:
+    # Traefik sẽ tự động tìm kiếm và sử dụng cùng một Docker socket
+    # (unix:///var/run/docker.sock) như Docker Provider.
+    # LƯU Ý: Nếu bạn chỉ sử dụng Docker Swarm, bạn CÓ THỂ BỎ QUA Docker Provider.
+    # network: nginx-proxy # Thêm dòng này nếu bạn muốn giới hạn phát hiện dịch vụ Swarm
+    # chỉ trong mạng "nginx-proxy"
+
+  # 2. Docker Provider (Giữ lại nếu bạn có container không phải Swarm)
+  # Traefik v3 sẽ coi đây là Docker Provider (không phải Swarm).
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watch: true
+    exposedByDefault: false
+    network: nginx-proxy # Chỉ phát hiện container trong mạng này
+
+  # 3. File Provider (Không thay đổi)
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+
+log:
+  level: DEBUG # Nên đổi thành INFO/WARN sau khi khắc phục lỗi
+  format: common
 
 serversTransport:
   insecureSkipVerify: true
